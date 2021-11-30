@@ -1,5 +1,6 @@
 from typing import Any, ClassVar
 
+import pytest
 from fastapi import APIRouter, Depends, FastAPI
 from starlette.testclient import TestClient
 
@@ -97,3 +98,33 @@ def test_prefix() -> None:
     response = client.get("/api/item")
     assert response.status_code == 200
     assert response.json() == "hello"
+
+
+def test_prefix_and_empty_route() -> None:
+    router = APIRouter(prefix="/api")
+
+    @cbv(router)
+    class RootHandler:
+        @router.get("")
+        def root(self) -> str:
+            return "hello"
+
+    client = TestClient(router)
+    response = client.get("/api")
+    assert response.status_code == 200
+    assert response.json() == "hello"
+
+
+def test_no_prefix_and_empty_route_raises() -> None:
+    router = APIRouter()
+
+    with pytest.raises(Exception):
+
+        @cbv(router)
+        class RootHandler:
+            @router.get("")
+            def root(self) -> str:
+                return "hello"
+
+        client = TestClient(router)
+        client.get("/api")
