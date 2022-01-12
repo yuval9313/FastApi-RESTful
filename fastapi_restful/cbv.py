@@ -86,7 +86,7 @@ def _init_cbv(cls: Type[Any], instance: Any = None) -> None:
 
 
 def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
-    cbv_router = APIRouter()
+    cbv_router = APIRouter(prefix=router.prefix)
     function_members = inspect.getmembers(cls, inspect.isfunction)
     for url in urls:
         _allocate_routes_by_method_name(router, url, function_members)
@@ -112,7 +112,11 @@ def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
         route.path = route.path[prefix_length:]
         _update_cbv_route_endpoint_signature(cls, route)
         cbv_router.routes.append(route)
-    router.include_router(cbv_router)
+    # Tempory remove prefix to by pass the prefix check and allow
+    # allow empty root method with a prefix
+    router.prefix = ""
+    router.include_router(cbv_router, prefix=cbv_router.prefix)
+    router.prefix = cbv_router.prefix
 
 
 def _allocate_routes_by_method_name(router: APIRouter, url: str, function_members: List[Tuple[str, Any]]) -> None:
