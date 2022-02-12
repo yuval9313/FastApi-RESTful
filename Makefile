@@ -9,7 +9,6 @@ all_src = $(pkg_src) $(tests_src)
 isort = isort $(all_src)
 autoflake = autoflake -r --remove-all-unused-imports --ignore-init-module-imports $(all_src)
 black = black $(all_src)
-flake8 = flake8 $(all_src)
 mypy_base = mypy --show-error-codes
 mypy = $(mypy_base) $(all_src)
 test = pytest --cov=$(pkg_src)
@@ -17,8 +16,8 @@ test = pytest --cov=$(pkg_src)
 .PHONY: all  ## Run the most common rules used during development
 all: static test
 
-.PHONY: static  ## Perform all static checks (format, lint, mypy)
-static: format lint mypy
+.PHONY: static  ## Perform all static checks (format, mypy)
+static: format mypy
 
 .PHONY: test  ## Run tests
 test:
@@ -29,10 +28,6 @@ format:
 	$(isort)
 	$(autoflake) -i
 	$(black)
-
-.PHONY: lint  ## Run flake8 over the application source and tests
-lint:
-	$(flake8)
 
 .PHONY: mypy  ## Run mypy over the application source and tests
 mypy:
@@ -49,7 +44,7 @@ testcov:
 	fi
 
 .PHONY: ci  ## Run all CI validation steps without making any changes to code
-ci: check-format lint mypy test
+ci: check-format mypy test
 
 .PHONY: check-format  ## Check the source code format without changes
 check-format:
