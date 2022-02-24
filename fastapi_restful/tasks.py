@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from asyncio import ensure_future
 from functools import wraps
 from traceback import format_exception
 from typing import Any, Callable, Coroutine, Optional, Union
@@ -13,12 +12,12 @@ NoArgsNoReturnDecorator = Callable[[Union[NoArgsNoReturnFuncT, NoArgsNoReturnAsy
 
 
 def repeat_every(
-    *,
-    seconds: float,
-    wait_first: float = None,
-    logger: Optional[logging.Logger] = None,
-    raise_exceptions: bool = False,
-    max_repetitions: Optional[int] = None,
+        *,
+        seconds: float,
+        wait_first: float = None,
+        logger: Optional[logging.Logger] = None,
+        raise_exceptions: bool = False,
+        max_repetitions: Optional[int] = None,
 ) -> NoArgsNoReturnDecorator:
     """
     This function returns a decorator that modifies a function so it is periodically re-executed after its first call.
@@ -73,7 +72,7 @@ def repeat_every(
                             raise exc
                     await asyncio.sleep(seconds)
 
-            ensure_future(loop())
+            await loop()
 
         return wrapped
 
