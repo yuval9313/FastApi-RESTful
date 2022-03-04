@@ -63,13 +63,13 @@ def repeat_every(
                             await func()  # type: ignore
                         else:
                             await run_in_threadpool(func)
-                        repetitions += 1
                     except Exception as exc:
                         if logger is not None:
                             formatted_exception = "".join(format_exception(type(exc), exc, exc.__traceback__))
                             logger.error(formatted_exception)
                         if raise_exceptions:
                             raise exc
+                    repetitions += 1
                     await asyncio.sleep(seconds)
 
             await loop()
