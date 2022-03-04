@@ -12,12 +12,12 @@ NoArgsNoReturnDecorator = Callable[[Union[NoArgsNoReturnFuncT, NoArgsNoReturnAsy
 
 
 def repeat_every(
-        *,
-        seconds: float,
-        wait_first: float = None,
-        logger: Optional[logging.Logger] = None,
-        raise_exceptions: bool = False,
-        max_repetitions: Optional[int] = None,
+    *,
+    seconds: float,
+    wait_first: float = None,
+    logger: Optional[logging.Logger] = None,
+    raise_exceptions: bool = False,
+    max_repetitions: Optional[int] = None,
 ) -> NoArgsNoReturnDecorator:
     """
     This function returns a decorator that modifies a function so it is periodically re-executed after its first call.
