@@ -26,7 +26,7 @@ async def test_repeat_every_with_sync_function_and_max_repetitions(mocker: Mocke
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_sync_function_max_repetitions_and_wait_first(mocker) -> None:
+async def test_repeat_every_with_sync_function_max_repetitions_and_wait_first(mocker: MockerFixture) -> None:
     counter = 0
     seconds = 0.01
     max_repetitions = 3
@@ -91,7 +91,7 @@ async def test_repeat_every_with_async_function_and_max_repetitions(mocker: Mock
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_async_function_max_repetitions_and_wait_first(mocker) -> None:
+async def test_repeat_every_with_async_function_max_repetitions_and_wait_first(mocker: MockerFixture) -> None:
     counter = 0
     seconds = 0.01
     max_repetitions = 3
