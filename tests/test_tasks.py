@@ -1,6 +1,5 @@
-import asyncio
 from typing import NoReturn, Callable
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, AsyncMock, call
 
 import pytest
 from pytest_mock import MockerFixture
@@ -23,11 +22,6 @@ def max_repetitions() -> int:
 @pytest.fixture(scope="module")
 def wait_first(seconds) -> float:
     return seconds
-
-
-@pytest.fixture
-def asyncio_sleep_spy(mocker: MockerFixture) -> MagicMock:
-    return mocker.spy(asyncio, "sleep")
 
 
 # Tests:
@@ -69,28 +63,29 @@ class TestRepeatEveryWithSynchronousFunction:
         return raise_exc
 
     @pytest.mark.asyncio
+    @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, seconds: float, max_repetitions: int, increase_counter_task: Callable, asyncio_sleep_spy: MagicMock,
-            mocker: MockerFixture
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
         assert self.counter == max_repetitions
-        asyncio_sleep_spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
+        asyncio_sleep_mock.assert_has_calls(max_repetitions * [call(seconds)], any_order=True)
 
     @pytest.mark.asyncio
+    @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self, seconds: float, max_repetitions: int, wait_first: float, wait_first_increase_counter_task: Callable,
-            asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, wait_first: float,
+            wait_first_increase_counter_task: Callable
     ):
         await wait_first_increase_counter_task()
 
         assert self.counter == max_repetitions
-        asyncio_sleep_spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
+        asyncio_sleep_mock.assert_has_calls((max_repetitions + 1) * [call(seconds)], any_order=True)
 
     @pytest.mark.asyncio
     async def test_raise_exceptions_false(
-            self, seconds: float, max_repetitions: int, raising_task: Callable, asyncio_sleep_spy: MagicMock
+            self, seconds: float, max_repetitions: int, raising_task: Callable
     ):
         try:
             await raising_task()
@@ -140,24 +135,25 @@ class TestRepeatEveryWithAsynchronousFunction:
         return raise_exc
 
     @pytest.mark.asyncio
+    @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, seconds: float, max_repetitions: int, increase_counter_task: Callable, asyncio_sleep_spy: MagicMock,
-            mocker: MockerFixture
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
         assert self.counter == max_repetitions
-        asyncio_sleep_spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
+        asyncio_sleep_mock.assert_has_calls(max_repetitions * [call(seconds)], any_order=True)
 
     @pytest.mark.asyncio
+    @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self, seconds: float, max_repetitions: int, wait_first_increase_counter_task: Callable,
-            asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int,
+            wait_first_increase_counter_task: Callable
     ):
         await wait_first_increase_counter_task()
 
         assert self.counter == max_repetitions
-        asyncio_sleep_spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
+        asyncio_sleep_mock.assert_has_calls((max_repetitions + 1) * [call(seconds)], any_order=True)
 
     @pytest.mark.asyncio
     async def test_raise_exceptions_false(self, seconds: float, max_repetitions: int, raising_task: Callable):
