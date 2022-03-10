@@ -1,5 +1,6 @@
 import asyncio
 from typing import NoReturn
+from unittest.mock import MagicMock
 
 import pytest
 from pytest_mock import MockerFixture
@@ -7,12 +8,35 @@ from pytest_mock import MockerFixture
 from fastapi_restful.tasks import repeat_every
 
 
+# Fixtures:
+
+@pytest.fixture(scope="module")
+def seconds() -> float:
+    return 0.01
+
+
+@pytest.fixture(scope="module")
+def max_repetitions() -> int:
+    return 3
+
+
+@pytest.fixture(scope="module")
+def wait_first(seconds) -> float:
+    return seconds
+
+
+@pytest.fixture
+def asyncio_sleep_spy(mocker: MockerFixture) -> MagicMock:
+    return mocker.spy(asyncio, "sleep")
+
+
+# Tests:
+
 @pytest.mark.asyncio
-async def test_repeat_every_with_sync_function_and_max_repetitions(mocker: MockerFixture) -> None:
+async def test_repeat_every_with_sync_function_and_max_repetitions(
+        seconds: float, max_repetitions: int, asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+):
     counter = 0
-    seconds = 0.01
-    max_repetitions = 3
-    spy = mocker.spy(asyncio, "sleep")
 
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
     def increase_counter() -> None:
@@ -22,15 +46,14 @@ async def test_repeat_every_with_sync_function_and_max_repetitions(mocker: Mocke
     await increase_counter()
 
     assert counter == max_repetitions
-    spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
+    asyncio_sleep_spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_sync_function_max_repetitions_and_wait_first(mocker) -> None:
+async def test_repeat_every_with_sync_function_max_repetitions_and_wait_first(
+        seconds: float, max_repetitions: int, wait_first: float, asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+):
     counter = 0
-    seconds = 0.01
-    max_repetitions = 3
-    spy = mocker.spy(asyncio, "sleep")
 
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions, wait_first=seconds)
     def increase_counter() -> None:
@@ -40,14 +63,13 @@ async def test_repeat_every_with_sync_function_max_repetitions_and_wait_first(mo
     await increase_counter()
 
     assert counter == max_repetitions
-    spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
+    asyncio_sleep_spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_sync_function_and_raise_exceptions_false() -> None:
-    seconds = 0.01
-    max_repetitions = 3
-
+async def test_repeat_every_with_sync_function_and_raise_exceptions_false(
+        seconds: float, max_repetitions: int, asyncio_sleep_spy: MagicMock
+):
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
     def raise_exc() -> NoReturn:
         raise ValueError("error")
@@ -61,9 +83,7 @@ async def test_repeat_every_with_sync_function_and_raise_exceptions_false() -> N
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_sync_function_and_raise_exceptions_true() -> None:
-    seconds = 0.01
-
+async def test_repeat_every_with_sync_function_and_raise_exceptions_true(seconds: float):
     @repeat_every(seconds=seconds, raise_exceptions=True)
     def raise_exc() -> NoReturn:
         raise ValueError("error")
@@ -73,11 +93,10 @@ async def test_repeat_every_with_sync_function_and_raise_exceptions_true() -> No
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_async_function_and_max_repetitions(mocker: MockerFixture) -> None:
+async def test_repeat_every_with_async_function_and_max_repetitions(
+        seconds: float, max_repetitions: int, asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+):
     counter = 0
-    seconds = 0.01
-    max_repetitions = 3
-    spy = mocker.spy(asyncio, "sleep")
 
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
     async def increase_counter() -> None:
@@ -87,15 +106,14 @@ async def test_repeat_every_with_async_function_and_max_repetitions(mocker: Mock
     await increase_counter()
 
     assert counter == max_repetitions
-    spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
+    asyncio_sleep_spy.assert_has_calls(max_repetitions * [mocker.call(seconds)], any_order=True)
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_async_function_max_repetitions_and_wait_first(mocker) -> None:
+async def test_repeat_every_with_async_function_max_repetitions_and_wait_first(
+        seconds: float, max_repetitions: int, asyncio_sleep_spy: MagicMock, mocker: MockerFixture
+):
     counter = 0
-    seconds = 0.01
-    max_repetitions = 3
-    spy = mocker.spy(asyncio, "sleep")
 
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions, wait_first=seconds)
     async def increase_counter() -> None:
@@ -105,14 +123,11 @@ async def test_repeat_every_with_async_function_max_repetitions_and_wait_first(m
     await increase_counter()
 
     assert counter == max_repetitions
-    spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
+    asyncio_sleep_spy.assert_has_calls((max_repetitions + 1) * [mocker.call(seconds)], any_order=True)
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_async_function_and_raise_exceptions_false() -> None:
-    seconds = 0.01
-    max_repetitions = 3
-
+async def test_repeat_every_with_async_function_and_raise_exceptions_false(seconds: float, max_repetitions: int):
     @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
     async def raise_exc() -> NoReturn:
         raise ValueError("error")
@@ -126,9 +141,7 @@ async def test_repeat_every_with_async_function_and_raise_exceptions_false() -> 
 
 
 @pytest.mark.asyncio
-async def test_repeat_every_with_async_function_and_raise_exceptions_true() -> None:
-    seconds = 0.01
-
+async def test_repeat_every_with_async_function_and_raise_exceptions_true(seconds: float):
     @repeat_every(seconds=seconds, raise_exceptions=True)
     async def raise_exc() -> NoReturn:
         raise ValueError("error")
