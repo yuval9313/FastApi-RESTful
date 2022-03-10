@@ -72,7 +72,7 @@ codecov = "*"
 isort = "*"
 autoflake = "*"
 black = { version = "*", allow-prereleases = true }
-flake8 = "*"
+flake8 = "^4.0.1"
 mypy = "*"
 sqlalchemy-stubs = "*"
 
