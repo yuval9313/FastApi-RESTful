@@ -1,8 +1,7 @@
 from typing import Callable, NoReturn
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import AsyncMock, call, patch
 
 import pytest
-from pytest_mock import MockerFixture
 
 from fastapi_restful.tasks import repeat_every
 
