@@ -7,6 +7,7 @@ from fastapi_restful.tasks import repeat_every
 
 # Fixtures:
 
+
 @pytest.fixture(scope="module")
 def seconds() -> float:
     return 0.01
@@ -23,6 +24,7 @@ def wait_first(seconds) -> float:
 
 
 # Tests:
+
 
 class TestRepeatEveryWithSynchronousFunction:
     def setup_method(self):
@@ -43,7 +45,6 @@ class TestRepeatEveryWithSynchronousFunction:
     @staticmethod
     @pytest.fixture
     def raising_task(seconds: float, max_repetitions: int):
-
         @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
         def raise_exc() -> NoReturn:
             raise ValueError("error")
@@ -53,7 +54,6 @@ class TestRepeatEveryWithSynchronousFunction:
     @staticmethod
     @pytest.fixture
     def suppressed_exception_task(seconds: float, max_repetitions: int):
-
         @repeat_every(seconds=seconds, raise_exceptions=True)
         def raise_exc() -> NoReturn:
             raise ValueError("error")
@@ -63,7 +63,7 @@ class TestRepeatEveryWithSynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -73,8 +73,12 @@ class TestRepeatEveryWithSynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, wait_first: float,
-            wait_first_increase_counter_task: Callable
+        self,
+        asyncio_sleep_mock: AsyncMock,
+        seconds: float,
+        max_repetitions: int,
+        wait_first: float,
+        wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
@@ -82,9 +86,7 @@ class TestRepeatEveryWithSynchronousFunction:
         asyncio_sleep_mock.assert_has_calls((max_repetitions + 1) * [call(seconds)], any_order=True)
 
     @pytest.mark.asyncio
-    async def test_raise_exceptions_false(
-            self, seconds: float, max_repetitions: int, raising_task: Callable
-    ):
+    async def test_raise_exceptions_false(self, seconds: float, max_repetitions: int, raising_task: Callable):
         try:
             await raising_task()
         except ValueError as e:
@@ -115,7 +117,6 @@ class TestRepeatEveryWithAsynchronousFunction:
     @staticmethod
     @pytest.fixture
     async def raising_task(seconds: float, max_repetitions: int):
-
         @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
         def raise_exc() -> NoReturn:
             raise ValueError("error")
@@ -125,7 +126,6 @@ class TestRepeatEveryWithAsynchronousFunction:
     @staticmethod
     @pytest.fixture
     async def suppressed_exception_task(seconds: float, max_repetitions: int):
-
         @repeat_every(seconds=seconds, raise_exceptions=True)
         def raise_exc() -> NoReturn:
             raise ValueError("error")
@@ -135,7 +135,7 @@ class TestRepeatEveryWithAsynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -145,8 +145,11 @@ class TestRepeatEveryWithAsynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int,
-            wait_first_increase_counter_task: Callable
+        self,
+        asyncio_sleep_mock: AsyncMock,
+        seconds: float,
+        max_repetitions: int,
+        wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
