@@ -1,15 +1,12 @@
 from typing import Any, ClassVar
 
 import pytest
-from fastapi import APIRouter, Depends
+
 from fastapi import status
+from fastapi import APIRouter, Depends
 from starlette.testclient import TestClient
 
 from fastapi_restful.cbv import cbv
-
-ONE = 1
-TWO = 2
-THREE_AS_BYTES = b'3'
 
 
 class AbstractTestRouter:
@@ -29,14 +26,16 @@ class AbstractTestRouter:
 
 class TestResponseModels(AbstractTestRouter):
     EXPECTED_RESPONSE = "home"
+    FIRST = 1
+    SECOND = 2
 
     @pytest.fixture(scope="class")
     def cbv_router(self, router: APIRouter):
         @cbv(router)
         class CBV:
             def __init__(self) -> None:
-                self.one = ONE
-                self.two = TWO
+                self.first = TestResponseModels.FIRST
+                self.second = TestResponseModels.SECOND
 
             @router.get("/", response_model=str)
             def string_response(self) -> str:
@@ -44,12 +43,11 @@ class TestResponseModels(AbstractTestRouter):
 
             @router.get("/sum", response_model=int)
             def int_response(self) -> int:
-                return self.one + self.two
+                return self.first + self.second
 
         return
 
-    def test_str_response(self, cbv_router: None,
-                             client: TestClient) -> None:
+    def test_str_response(self, cbv_router: None, client: TestClient) -> None:
         response_home = client.get("/")
         assert response_home.status_code == status.HTTP_200_OK
         assert response_home.json() == self.EXPECTED_RESPONSE
@@ -57,35 +55,38 @@ class TestResponseModels(AbstractTestRouter):
     def test_sum_response(self, cbv_router: None, client: TestClient):
         sum_response = client.get("/sum")
         assert sum_response.status_code == status.HTTP_200_OK
-        assert sum_response.content == THREE_AS_BYTES
+        assert sum_response.json() == self.FIRST + self.SECOND
 
 
 class TestDependencies(AbstractTestRouter):
+    FIRST = 3
+    SECOND = 6
+
     @pytest.fixture(scope="class")
     def cbv_router(self, router: APIRouter):
         def dependency_one() -> int:
-            return ONE
+            return TestDependencies.FIRST
 
         def dependency_two() -> int:
-            return TWO
+            return TestDependencies.SECOND
 
         @cbv(router)
         class CBV:
-            one: int = Depends(dependency_one)
+            dataclass_defined_dependency: int = Depends(dependency_one)
 
             def __init__(self, two: int = Depends(dependency_two)):
-                self.two = two
+                self.init_defined_dependency = two
 
             @router.get("/", response_model=int)
             def int_dependencies(self) -> int:
-                return self.one + self.two
+                return self.dataclass_defined_dependency + self.init_defined_dependency
 
         return
 
     def test_dependencies(self, cbv_router: None, client: TestClient) -> None:
         response = client.get("/")
         assert response.status_code == status.HTTP_200_OK
-        assert response.content == THREE_AS_BYTES
+        assert response.json() == self.FIRST + self.SECOND
 
 
 class TestPathOrderPreservation(AbstractTestRouter):
@@ -126,15 +127,14 @@ class TestClassVar(AbstractTestRouter):
     def test_class_var(self, cbv_router: None, client: TestClient) -> None:
         response = client.get("/")
         assert response.status_code == status.HTTP_200_OK
-        assert response.content == b"false"
+        assert not response.json()
 
 
 class TestMultipleTests(AbstractTestRouter):
-    def setup_method(self):
-        self.custom_path = "abc"
-        self.num_path = "1"
+    custom_path = "abc"
+    num_path = "1"
 
-    @pytest.fixture(scope="function")
+    @pytest.fixture(scope="class")
     def cbv_router(self, router: APIRouter):
         @cbv(router)
         class CBV:
@@ -146,23 +146,22 @@ class TestMultipleTests(AbstractTestRouter):
 
         return
 
-    def test_multiple_paths(self, cbv_router: None,
-                            client: TestClient) -> None:
+    def test_get_items(self, cbv_router: None,  client: TestClient):
         items_response = client.get("/items")
         assert items_response.json() == []
 
-        specific_item_response = client.get(f"/database/{self.custom_path}")
-        assert specific_item_response.json() == {"custom_path": self.custom_path}
-
-        num_item_response = client.get(f"/items/{self.num_path}")
-        assert num_item_response.json() == {"custom_path": self.num_path}
+    @pytest.mark.parametrize("param", [custom_path, num_path])
+    def test_multiple_paths(self, cbv_router: None,
+                            client: TestClient, param: str) -> None:
+        specific_item_response = client.get(f"/database/{param}")
+        assert specific_item_response.json() == {"custom_path": param}
 
 
 class TestRequestQuery(AbstractTestRouter):
     def setup_method(self):
         self.param = 3
 
-    @pytest.fixture(scope="function")
+    @pytest.fixture(scope="class")
     def cbv_router(self, router: APIRouter):
         @cbv(router)
         class CBV:
