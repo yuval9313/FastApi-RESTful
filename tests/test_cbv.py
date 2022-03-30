@@ -2,8 +2,7 @@ from typing import Any, ClassVar
 
 import pytest
 
-from fastapi import status
-from fastapi import APIRouter, Depends
+from fastapi import status, APIRouter, Depends
 from starlette.testclient import TestClient
 
 from fastapi_restful.cbv import cbv

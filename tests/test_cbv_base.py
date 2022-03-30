@@ -1,88 +1,137 @@
+import pytest
 from typing import Any, Dict, List, Union
 
-from fastapi import FastAPI
+from fastapi import status, FastAPI
 from fastapi.responses import PlainTextResponse
 from starlette.testclient import TestClient
 
 from fastapi_restful.cbv_base import Api, Resource, set_responses
 
 
-def test_cbv() -> None:
-    class CBV(Resource):
-        def __init__(self, z: int = 1):
-            super().__init__()
-            self.y = 1
-            self.z = z
+class AbstractTest:
+    @pytest.fixture(scope="class")
+    def app(self):
+        return FastAPI()
 
-        @set_responses(int)
-        def post(self, x: int) -> int:
-            print(x)
-            return x + self.y + self.z
+    @pytest.fixture(scope="class")
+    def client(self, app):
+        return TestClient(app)
 
-        @set_responses(bool)
-        def get(self) -> bool:
-            return hasattr(self, "cy")
+    @pytest.fixture(scope="class")
+    def api(self, app):
+        return Api(app)
 
-    app = FastAPI()
-    api = Api(app)
-    cbv = CBV(2)
-    api.add_resource(cbv, "/", "/classvar")
-
-    client = TestClient(app)
-    response_1 = client.post("/", params={"x": 1}, json={})
-    assert response_1.status_code == 200
-    assert response_1.content == b"4"
-
-    response_2 = client.get("/classvar")
-    assert response_2.status_code == 200
-    assert response_2.content == b"false"
+    @pytest.fixture
+    def cbv_resource(self):
+        pass
 
 
-def test_arg_in_path() -> None:
-    class TestCBV(Resource):
-        @set_responses(str)
-        def get(self, item_id: str) -> str:
-            return item_id
+class TestCbv(AbstractTest):
+    WANTED_ATTR ="cy"
+    INPUTTED = 2
+    BUILTIN = 1
 
-    app = FastAPI()
-    api = Api(app)
+    @pytest.fixture
+    def cbv_resource(self):
+        class CBV(Resource):
+            def __init__(self, user_input: int = 1):
+                super().__init__()
+                self.builtin_value = TestCbv.BUILTIN
+                self.configured_value = user_input
 
-    test_cbv_resource = TestCBV()
-    api.add_resource(test_cbv_resource, "/{item_id}")
+            @set_responses(int)
+            def post(self, user_given: int) -> int:
+                print(user_given)
+                return user_given + self.builtin_value + self.configured_value
 
-    assert TestClient(app).get("/test").json() == "test"
+            @set_responses(bool)
+            def get(self) -> bool:
+                return hasattr(self, TestCbv.WANTED_ATTR)
+
+        return CBV
+
+    def setup_method(self):
+        self.posted_value = 2
+
+    @pytest.fixture(autouse=True)
+    def add_resource(self, api: Api, cbv_resource: object):
+        cbv = cbv_resource(self.INPUTTED)
+        api.add_resource(cbv, "/", "/classvar")
+
+    def test_post_params(self, client: TestClient):
+        response_post = client.post("/", params={
+                                    "user_given": self.posted_value}, json={})
+        summed = self.posted_value + self.BUILTIN + self.INPUTTED
+        assert response_post.status_code == status.HTTP_200_OK
+        assert response_post.json() == summed
+
+    def test_get_classvar(self, client: TestClient):
+        response_2 = client.get("/classvar")
+        assert response_2.status_code == status.HTTP_200_OK
+        assert response_2.json() is False
 
 
-def test_multiple_routes() -> None:
-    class RootHandler(Resource):
-        def get(self, item_path: str = None) -> Union[List[Any], Dict[str, str]]:
-            if item_path:
-                return {"item_path": item_path}
-            return []
+class TestArgsInPath(AbstractTest):
+    ITEM = "test"
 
-    app = FastAPI()
-    api = Api(app)
+    @pytest.fixture
+    def cbv_resource(self):
+        class TestCBV(Resource):
+            @set_responses(str)
+            def get(self, item_id: str) -> str:
+                return item_id
 
-    root_handler_resource = RootHandler()
-    api.add_resource(root_handler_resource, "/items/?", "/items/{item_path:path}")
+        return TestCBV
 
-    client = TestClient(app)
+    @staticmethod
+    @pytest.fixture(autouse=True)
+    def add_resource(cbv_resource: object, api: Api):
+        resource = cbv_resource()
+        api.add_resource(resource, "/{item_id}")
 
-    assert client.get("/items/1").json() == {"item_path": "1"}
-    assert client.get("/items").json() == []
+    def test_args(self, client: TestClient):
+        assert client.get(f"/{self.ITEM}").json() == self.ITEM
 
 
-def test_different_response_model() -> None:
-    class RootHandler(Resource):
-        @set_responses({}, response_class=PlainTextResponse)
-        def get(self) -> str:
-            return "Done!"
+class TestMultipleRoutes(AbstractTest):
+    @pytest.fixture
+    def cbv_resource(self):
+        class RootHandler(Resource):
+            def get(self, item_path: str = None) -> Union[List[Any],
+                                                          Dict[str, str]]:
+                if item_path:
+                    return {"item_path": item_path}
+                return []
 
-    app = FastAPI()
-    api = Api(app)
+        return RootHandler
 
-    api.add_resource(RootHandler(), "/check")
+    @pytest.fixture(autouse=True)
+    def add_resource(self, cbv_resource: object, api: Api):
+        root_handler_resource = cbv_resource()
+        api.add_resource(root_handler_resource, "/items/?",
+                         "/items/{item_path:path}")
 
-    client = TestClient(app)
+    def test_routes(self, client):
+        assert client.get("/items/1").json() == {"item_path": "1"}
+        assert client.get("/items").json() == []
 
-    assert client.get("/check").text == "Done!"
+
+class TestDifferentResponseModule(AbstractTest):
+    CHOSEN_ROUTE = "/check"
+    RESPONSE = "Done!"
+
+    @pytest.fixture
+    def cbv_resource(self):
+        class RootHandler(Resource):
+            @set_responses({}, response_class=PlainTextResponse)
+            def get(self) -> str:
+                return TestDifferentResponseModule.RESPONSE
+
+        return RootHandler
+
+    @pytest.fixture(autouse=True)
+    def add_resource(self, api: Api, cbv_resource: object):
+        api.add_resource(cbv_resource(), self.CHOSEN_ROUTE)
+
+    def test_different_response(self, client: TestClient):
+        assert client.get(self.CHOSEN_ROUTE).text == self.RESPONSE
