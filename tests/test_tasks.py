@@ -5,6 +5,7 @@ import pytest
 
 from fastapi_restful.tasks import repeat_every
 
+
 # Fixtures:
 
 
@@ -25,14 +26,15 @@ def wait_first(seconds) -> float:
 
 # Tests:
 
-
-class TestRepeatEveryWithSynchronousFunction:
+class TestRepeatEveryBase:
     def setup_method(self):
         self.counter = 0
 
     def increase_counter(self):
         self.counter += 1
 
+
+class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
     @pytest.fixture
     def increase_counter_task(self, seconds: float, max_repetitions: int):
         return repeat_every(seconds=seconds, max_repetitions=max_repetitions)(self.increase_counter)
@@ -63,7 +65,7 @@ class TestRepeatEveryWithSynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -73,12 +75,12 @@ class TestRepeatEveryWithSynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-        self,
-        asyncio_sleep_mock: AsyncMock,
-        seconds: float,
-        max_repetitions: int,
-        wait_first: float,
-        wait_first_increase_counter_task: Callable,
+            self,
+            asyncio_sleep_mock: AsyncMock,
+            seconds: float,
+            max_repetitions: int,
+            wait_first: float,
+            wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
@@ -98,13 +100,7 @@ class TestRepeatEveryWithSynchronousFunction:
             await suppressed_exception_task()
 
 
-class TestRepeatEveryWithAsynchronousFunction:
-    def setup_method(self):
-        self.counter = 0
-
-    async def increase_counter(self):
-        self.counter += 1
-
+class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
     @pytest.fixture
     def increase_counter_task(self, seconds: float, max_repetitions: int):
         return repeat_every(seconds=seconds, max_repetitions=max_repetitions)(self.increase_counter)
@@ -135,7 +131,7 @@ class TestRepeatEveryWithAsynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -145,11 +141,11 @@ class TestRepeatEveryWithAsynchronousFunction:
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-        self,
-        asyncio_sleep_mock: AsyncMock,
-        seconds: float,
-        max_repetitions: int,
-        wait_first_increase_counter_task: Callable,
+            self,
+            asyncio_sleep_mock: AsyncMock,
+            seconds: float,
+            max_repetitions: int,
+            wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
