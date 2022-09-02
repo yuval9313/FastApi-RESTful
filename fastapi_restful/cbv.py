@@ -92,7 +92,9 @@ def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
         _allocate_routes_by_method_name(router, url, function_members)
     router_roles = []
     for route in router.routes:
-        assert isinstance(route, APIRoute)
+        if not isinstance(route, APIRoute):
+            raise ValueError("The provided routes should be of type APIRoute")
+
         route_methods: Any = route.methods
         cast(Tuple[Any], route_methods)
         router_roles.append((route.path, tuple(route_methods)))
@@ -100,7 +102,7 @@ def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
     if len(set(router_roles)) != len(router_roles):
         raise Exception("An identical route role has been implemented more then once")
 
-    functions_set = set(func for _, func in function_members)
+    functions_set = {func for _, func in function_members}
     cbv_routes = [
         route
         for route in router.routes
