@@ -5,7 +5,6 @@ import pytest
 
 from fastapi_restful.tasks import repeat_every
 
-
 # Fixtures:
 
 
@@ -25,6 +24,7 @@ def wait_first(seconds) -> float:
 
 
 # Tests:
+
 
 class TestRepeatEveryBase:
     def setup_method(self):
@@ -65,7 +65,7 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -75,12 +75,12 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self,
-            asyncio_sleep_mock: AsyncMock,
-            seconds: float,
-            max_repetitions: int,
-            wait_first: float,
-            wait_first_increase_counter_task: Callable,
+        self,
+        asyncio_sleep_mock: AsyncMock,
+        seconds: float,
+        max_repetitions: int,
+        wait_first: float,
+        wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
@@ -131,7 +131,7 @@ class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions(
-            self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
+        self, asyncio_sleep_mock: AsyncMock, seconds: float, max_repetitions: int, increase_counter_task: Callable
     ):
         await increase_counter_task()
 
@@ -141,11 +141,11 @@ class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
     @pytest.mark.asyncio
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
-            self,
-            asyncio_sleep_mock: AsyncMock,
-            seconds: float,
-            max_repetitions: int,
-            wait_first_increase_counter_task: Callable,
+        self,
+        asyncio_sleep_mock: AsyncMock,
+        seconds: float,
+        max_repetitions: int,
+        wait_first_increase_counter_task: Callable,
     ):
         await wait_first_increase_counter_task()
 
