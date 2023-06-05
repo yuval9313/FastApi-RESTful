@@ -1,10 +1,10 @@
-from typing import Any, Dict, NoReturn
-from starlette import status
-
 from __future__ import annotations
+
+from typing import Any, Dict, NoReturn
 
 import pytest
 from fastapi import FastAPI
+from starlette import status
 
 with pytest.warns(DeprecationWarning):
     from fastapi_restful.inferring_router import InferringRouter
