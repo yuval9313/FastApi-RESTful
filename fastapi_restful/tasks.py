@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 from functools import wraps
 from traceback import format_exception
-from typing import Any, Callable, Coroutine, Optional, Union
+from typing import Any, Callable, Coroutine, Union
 
 from starlette.concurrency import run_in_threadpool
 
@@ -15,9 +17,9 @@ def repeat_every(
     *,
     seconds: float,
     wait_first: float = None,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
     raise_exceptions: bool = False,
-    max_repetitions: Optional[int] = None,
+    max_repetitions: int | None = None,
 ) -> NoArgsNoReturnDecorator:
     """
     This function returns a decorator that modifies a function so it is periodically re-executed after its first call.
@@ -43,7 +45,7 @@ def repeat_every(
         The maximum number of times to call the repeated function. If `None`, the function is repeated forever.
     """
 
-    def decorator(func: Union[NoArgsNoReturnAsyncFuncT, NoArgsNoReturnFuncT]) -> NoArgsNoReturnAsyncFuncT:
+    def decorator(func: NoArgsNoReturnAsyncFuncT | NoArgsNoReturnFuncT) -> NoArgsNoReturnAsyncFuncT:
         """
         Converts the decorated function into a repeated, periodically-called version of itself.
         """

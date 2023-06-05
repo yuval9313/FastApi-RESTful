@@ -6,8 +6,6 @@ import pytest
 from fastapi_restful.tasks import repeat_every
 
 # Fixtures:
-
-
 @pytest.fixture(scope="module")
 def seconds() -> float:
     return 0.01
@@ -24,8 +22,6 @@ def wait_first(seconds) -> float:
 
 
 # Tests:
-
-
 class TestRepeatEveryBase:
     def setup_method(self):
         self.counter = 0
