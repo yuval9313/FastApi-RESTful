@@ -5,6 +5,7 @@ import pytest
 
 from fastapi_restful.tasks import repeat_every
 
+
 # Fixtures:
 @pytest.fixture(scope="module")
 def seconds() -> float:
