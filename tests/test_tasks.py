@@ -5,7 +5,6 @@ import logging
 import time
 from asyncio import AbstractEventLoop
 from typing import TYPE_CHECKING, Any, Dict, List, NoReturn, Tuple
-from typing import Any, NoReturn
 
 import pytest
 from pytest import LogCaptureFixture
