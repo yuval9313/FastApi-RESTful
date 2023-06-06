@@ -5,8 +5,8 @@ from uuid import UUID
 import pytest
 import sqlalchemy as sa
 from fastapi import Depends, FastAPI
-from sqlalchemy.orm import Session
 from sqlalchemy import __version__ as sqlalchemy_version
+from sqlalchemy.orm import Session
 
 from fastapi_restful.guid_type import GUID, GUID_DEFAULT_SQLITE
 from fastapi_restful.session import FastAPISessionMaker, get_engine
