@@ -20,7 +20,7 @@ static: format lint mypy
 test:
 	$(test)
 
-.PHONY: format  ## Auto-format the source code (isort, autoflake, black)
+.PHONY: format  ## Auto-format the source code (ruff, black)
 format:
 	black $(all_src)
 	black -l 82 $(docs_src)
@@ -88,15 +88,9 @@ docs-build:
 	cp ./CHANGELOG.md ./docs/release-notes.md
 	python -m mkdocs build
 
-.PHONY: docs-build-ci  ## Generate the docs and check README.md is up-to-date
-docs-build-ci:
-	python -m mkdocs build
-	cmp README.md docs/index.md
-	cmp CONTRIBUTING.md docs/contributing.md
-
 .PHONY: docs-format  ## Format the python code that is part of the docs
 docs-format:
-	isort -rc $(docs_src)
+	ruff $(docs_src)
 	autoflake -r --remove-all-unused-imports --ignore-init-module-imports $(docs_src) -i
 	black -l 82 $(docs_src)
 
