@@ -121,18 +121,18 @@ class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
 
     @staticmethod
     @pytest.fixture
-    async def raising_task(seconds: float, max_repetitions: int) -> NoArgsNoReturnAsyncFuncT:
+    def raising_task(seconds: float, max_repetitions: int) -> NoArgsNoReturnAsyncFuncT:
         @repeat_every(seconds=seconds, max_repetitions=max_repetitions)
-        def raise_exc() -> NoReturn:
+        async def raise_exc() -> NoReturn:
             raise ValueError("error")
 
         return raise_exc
 
     @staticmethod
     @pytest.fixture
-    async def suppressed_exception_task(seconds: float, max_repetitions: int) -> NoArgsNoReturnAsyncFuncT:
+    def suppressed_exception_task(seconds: float, max_repetitions: int) -> NoArgsNoReturnAsyncFuncT:
         @repeat_every(seconds=seconds, raise_exceptions=True)
-        def raise_exc() -> NoReturn:
+        async def raise_exc() -> NoReturn:
             raise ValueError("error")
 
         return raise_exc
