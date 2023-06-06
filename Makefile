@@ -6,9 +6,6 @@ tests_src = tests
 docs_src = docs/src
 all_src = $(pkg_src) $(tests_src)
 
-isort = isort $(all_src)
-autoflake = autoflake -r --remove-all-unused-imports --ignore-init-module-imports $(all_src)
-black = black $(all_src)
 mypy_base = mypy --show-error-codes
 mypy = $(mypy_base) $(all_src)
 test = pytest --cov=$(pkg_src)
@@ -17,7 +14,7 @@ test = pytest --cov=$(pkg_src)
 all: static test
 
 .PHONY: static  ## Perform all static checks (format, mypy)
-static: format mypy
+static: format lint mypy
 
 .PHONY: test  ## Run tests
 test:
@@ -25,9 +22,15 @@ test:
 
 .PHONY: format  ## Auto-format the source code (isort, autoflake, black)
 format:
-	$(isort)
-	$(autoflake) -i
-	$(black)
+	black $(all_src)
+	black -l 82 $(docs_src)
+	ruff --fix $(all_src)
+
+.PHONY: lint
+lint:
+	ruff $(all_src)
+	black --check --diff $(all_src)
+	black -l 82 $(docs_src) --check --diff
 
 .PHONY: mypy  ## Run mypy over the application source and tests
 mypy:
@@ -44,15 +47,7 @@ testcov:
 	fi
 
 .PHONY: ci  ## Run all CI validation steps without making any changes to code
-ci: check-format mypy test
-
-.PHONY: check-format  ## Check the source code format without changes
-check-format:
-	$(isort) $(docs_src) --check-only
-	@echo $(autoflake) $(docs_src) --check
-	@( set -o pipefail; $(autoflake) $(docs_src) --check | (grep -v "No issues detected!" || true) )
-	$(black) --check
-	black -l 82 $(docs_src) --check
+ci: lint mypy test
 
 .PHONY: clean  ## Remove temporary and cache files/directories
 clean:
@@ -67,6 +62,7 @@ clean:
 	rm -rf `find . -type d -name .pytest_cache`
 	rm -rf `find . -type d -name .cache`
 	rm -rf `find . -type d -name .mypy_cache`
+	rm -rf `find . -type d -name .ruff_cache`
 	rm -rf `find . -type d -name htmlcov`
 	rm -rf `find . -type d -name "*.egg-info"`
 	rm -rf `find . -type d -name build`
