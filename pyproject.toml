@@ -52,7 +52,7 @@ aiofiles = "*"  # Serving static files
 httpx = "*"  # TestClient
 
 # Testing
-pytest = "^7.0"
+pytest = "^7.3"
 pytest-cov = "*"
 pytest-asyncio = "*"
 coverage = "*"
