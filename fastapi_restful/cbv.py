@@ -112,11 +112,12 @@ def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
     for route in cbv_routes:
         router.routes.remove(route)
         # remove any tags that were previously assigned by router to route
-        for tag in router.tags:
-            try:
-                route.tags.remove(tag)
-            except ValueError:
-                pass
+        if isinstance(route, APIRoute):
+            for tag in router.tags:
+                try:
+                    route.tags.remove(tag)
+                except ValueError:
+                    pass
         route.path = route.path[prefix_length:]
         _update_cbv_route_endpoint_signature(cls, route)
         cbv_router.routes.append(route)
