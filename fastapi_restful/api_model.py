@@ -18,10 +18,11 @@ class APIModel(BaseModel):
         * Because of this, FastAPI will automatically attempt to parse returned orm instances into the model
     """
 
-    class Config(BaseConfig):
-        orm_mode = True
-        allow_population_by_field_name = True
-        alias_generator = partial(snake2camel, start_lower=True)
+    model_config = {
+        'from_attributes': True,
+        'populate_by_name': True,
+        'alias_generator': partial(snake2camel, start_lower=True)
+    }
 
 
 class APIMessage(APIModel):
