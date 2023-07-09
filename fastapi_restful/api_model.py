@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import partial
 
-from pydantic import BaseConfig, BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from .camelcase import snake2camel
 
@@ -19,9 +19,7 @@ class APIModel(BaseModel):
     """
 
     model_config = ConfigDict(
-        from_attributes=True,
-        populate_by_name=True,
-        alias_generator=partial(snake2camel, start_lower=True)
+        from_attributes=True, populate_by_name=True, alias_generator=partial(snake2camel, start_lower=True)
     )
 
 

@@ -53,6 +53,7 @@ class APISettings(BaseSettings):
         if self.disable_docs:
             fastapi_kwargs.update({"docs_url": None, "openapi_url": None, "redoc_url": None})
         return fastapi_kwargs
+
     model_config = ConfigDict(env_prefix="api_", validate_assignment=True)
 
 
