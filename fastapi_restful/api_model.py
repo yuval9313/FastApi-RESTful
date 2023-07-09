@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import partial
 
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseConfig, BaseModel, ConfigDict
 
 from .camelcase import snake2camel
 
@@ -18,11 +18,11 @@ class APIModel(BaseModel):
         * Because of this, FastAPI will automatically attempt to parse returned orm instances into the model
     """
 
-    model_config = {
-        'from_attributes': True,
-        'populate_by_name': True,
-        'alias_generator': partial(snake2camel, start_lower=True)
-    }
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=partial(snake2camel, start_lower=True)
+    )
 
 
 class APIMessage(APIModel):
