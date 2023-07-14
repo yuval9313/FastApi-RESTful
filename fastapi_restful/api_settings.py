@@ -64,6 +64,7 @@ class APISettings(BaseSettings):
     if PYDANTIC_VERSION[0] == "2":
         model_config = ConfigDict(env_prefix="api_", validate_assignment=True)
     else:
+
         class Config:
             env_prefix = "api_"
             validate_assignment = True
