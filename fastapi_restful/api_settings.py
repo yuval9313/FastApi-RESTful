@@ -3,8 +3,15 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
+import pydantic
 from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+
+PYDANTIC_VERSION = pydantic.VERSION
+
+if PYDANTIC_VERSION[0] == "2":
+    from pydantic_settings import BaseSettings
+else:
+    from pydantic import BaseSettings
 
 
 class APISettings(BaseSettings):
@@ -54,7 +61,12 @@ class APISettings(BaseSettings):
             fastapi_kwargs.update({"docs_url": None, "openapi_url": None, "redoc_url": None})
         return fastapi_kwargs
 
-    model_config = ConfigDict(env_prefix="api_", validate_assignment=True)
+    if PYDANTIC_VERSION[0] == "2":
+        model_config = ConfigDict(env_prefix="api_", validate_assignment=True)
+    else:
+        class Config:
+            env_prefix = "api_"
+            validate_assignment = True
 
 
 @lru_cache()

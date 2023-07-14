@@ -46,8 +46,21 @@ testcov:
 		open htmlcov/index.html; \
 	fi
 
-.PHONY: ci  ## Run all CI validation steps without making any changes to code
-ci: lint mypy test
+.PHONY: ci-v1  ## Run all CI validation steps without making any changes to code in pydantic v1
+
+ci-v1: install-v1 lint mypy test
+
+
+.PHONY: ci-v1  ## Run all CI validation steps without making any changes to code in pydantic v2
+ci-v2: install-v2 lint mypy test
+
+
+install-v1:
+	poetry run python -m pip install "pydantic>=1.10,<2.0.0"
+
+install-v2:
+	poetry run python -m pip install "pydantic>=2.0.0,<3.0.0"
+
 
 .PHONY: clean  ## Remove temporary and cache files/directories
 clean:
