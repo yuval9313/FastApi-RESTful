@@ -73,9 +73,8 @@ markdown-include = "*"
 autoflake = "^1.4"
 
 [tool.poetry.extras]
-all = ["sqlalchemy"]
+all = ["sqlalchemy", "pydantic-settings", "typing-inspect"]
 session = ["sqlalchemy"]
-v2 = ["pydantic-settings", "typing-inspect"]
 
 [tool.black]
 line-length = 120

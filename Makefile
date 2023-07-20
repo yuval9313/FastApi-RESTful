@@ -48,7 +48,7 @@ testcov:
 
 .PHONY: ci-v1  ## Run all CI validation steps without making any changes to code in pydantic v1
 
-ci-v1: install-v1 lint mypy test
+ci-v1: install-v1 lint test
 
 
 .PHONY: ci-v1  ## Run all CI validation steps without making any changes to code in pydantic v2

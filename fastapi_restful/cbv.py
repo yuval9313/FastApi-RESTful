@@ -10,7 +10,7 @@ PYDANTIC_VERSION = pydantic.VERSION
 if PYDANTIC_VERSION[0] == "2":
     from typing_inspect import is_classvar
 else:
-    from pydantic.typing import is_classvar
+    from pydantic.typing import is_classvar  # type: ignore[no-redef]
 
 T = TypeVar("T")
 

@@ -4,14 +4,13 @@ from functools import lru_cache
 from typing import Any
 
 import pydantic
-from pydantic import ConfigDict
 
 PYDANTIC_VERSION = pydantic.VERSION
 
 if PYDANTIC_VERSION[0] == "2":
-    from pydantic_settings import BaseSettings
+    from pydantic_settings import BaseSettings, SettingsConfigDict
 else:
-    from pydantic import BaseSettings
+    from pydantic import BaseSettings  # type: ignore[no-redef]
 
 
 class APISettings(BaseSettings):
@@ -62,7 +61,7 @@ class APISettings(BaseSettings):
         return fastapi_kwargs
 
     if PYDANTIC_VERSION[0] == "2":
-        model_config = ConfigDict(env_prefix="api_", validate_assignment=True)
+        model_config = SettingsConfigDict(env_prefix="api_", validate_assignment=True)
     else:
 
         class Config:

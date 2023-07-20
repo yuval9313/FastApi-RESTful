@@ -30,4 +30,4 @@ def test_aliases() -> None:
         some_field: str
 
     assert Model(some_field="a").some_field == "a"
-    assert Model(someField="a").some_field == "a"
+    assert Model(someField="a").some_field == "a"  # type: ignore[call-arg]
