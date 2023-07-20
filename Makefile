@@ -60,6 +60,8 @@ install-v1:
 
 install-v2:
 	poetry run python -m pip install "pydantic>=2.0.0,<3.0.0"
+	poetry run python -m pip install "pydantic-settings>=2.0.0,<3.0.0"
+	poetry run python -m pip install "pydantic>=0.9.0,<1.0.0"
 
 
 .PHONY: clean  ## Remove temporary and cache files/directories
