@@ -85,6 +85,15 @@ def _init_cbv(cls: Type[Any], instance: Any = None) -> None:
     setattr(cls, CBV_CLASS_KEY, True)
 
 
+def _remove_router_tags(route: Route, router: APIRouter) -> None:
+    """
+    Removes tags previously assigned to the route by the router, as they will
+    be added again later when re-added to the router.
+    """
+    if hasattr(route, 'tags'):
+        route.tags = list(set(route.tags) - set(router.tags))
+
+
 def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
     cbv_router = APIRouter()
     function_members = inspect.getmembers(cls, inspect.isfunction)
@@ -111,13 +120,7 @@ def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
     prefix_length = len(router.prefix)  # Until 'black' would fix an issue which causes PEP8: E203
     for route in cbv_routes:
         router.routes.remove(route)
-        # remove any tags that were previously assigned by router to route
-        if isinstance(route, APIRoute):
-            for tag in router.tags:
-                try:
-                    route.tags.remove(tag)
-                except ValueError:
-                    pass
+        _remove_router_tags(route, router)
         route.path = route.path[prefix_length:]
         _update_cbv_route_endpoint_signature(cls, route)
         cbv_router.routes.append(route)

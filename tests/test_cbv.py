@@ -130,3 +130,14 @@ class TestCBV:
         response = client.get("/api/item")
         assert response.status_code == 200
         assert response.json() == "hello"
+
+    def test_duplicate_tag_removal(self) -> None:
+        router = APIRouter(prefix="/api", tags=["test"])
+
+        @cbv(router)
+        class CBV:
+            @router.get("/item")
+            def root(self) -> str:
+                return "hello"
+
+        assert router.routes[0].tags == ["test"]
