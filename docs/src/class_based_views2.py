@@ -9,7 +9,6 @@ from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 from fastapi_restful.api_model import APIMessage, APIModel
 from fastapi_restful.cbv import cbv
 from fastapi_restful.guid_type import GUID
-from fastapi_restful.inferring_router import InferringRouter
 
 # Begin Setup
 UserID = NewType("UserID", UUID)
@@ -54,7 +53,7 @@ def get_owned_item(session: Session, owner: UserID, item_id: ItemID) -> ItemORM:
 
 # End Setup
 app = FastAPI()
-router = InferringRouter()  # Step 1: Create a router
+router = APIRouter()  # Step 1: Create a router
 
 
 @cbv(router)  # Step 2: Create and decorate a class to hold the endpoints
