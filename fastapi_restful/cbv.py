@@ -94,6 +94,8 @@ def _init_cbv(cls: Type[Any], instance: Any = None) -> None:
 def _register_endpoints(router: APIRouter, cls: Type[Any], *urls: str) -> None:
     cbv_router = APIRouter()
     function_members = inspect.getmembers(cls, inspect.isfunction)
+    function_members = [(name, func) for name, func in function_members if name != "__init__"]
+
     for url in urls:
         _allocate_routes_by_method_name(router, url, function_members)
     router_roles = []
