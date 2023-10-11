@@ -15,7 +15,7 @@
 </a>
 <a href="https://github.com/yuval9313/fastapi-restful" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/FastApi-RESTful.svg" alt="Python versions">
-    <img src="https://img.shields.io/github/license/yuval9313/fastapi-utils.svg" alt="License">
+    <img src="https://img.shields.io/github/license/yuval9313/FastApi-RESTful.svg" alt="License">
 </a>
 </p>
 
@@ -51,12 +51,12 @@ This package includes a number of utilities to help reduce boilerplate and reuse
 It also adds a variety of more basic utilities that are useful across a wide variety of projects:
 
 * **APIModel**: A reusable `pydantic.BaseModel`-derived base class with useful defaults
-* **APISettings**: A subclass of `pydantic.BaseSettings` that makes it easy to configure FastAPI through environment variables 
+* **APISettings**: A subclass of `pydantic.BaseSettings` that makes it easy to configure FastAPI through environment variables
 * **String-Valued Enums**: The `StrEnum` and `CamelStrEnum` classes make string-valued enums easier to maintain
 * **CamelCase Conversions**: Convenience functions for converting strings from `snake_case` to `camelCase` or `PascalCase` and back
 * **GUID Type**: The provided GUID type makes it easy to use UUIDs as the primary keys for your database tables
 
-See the [docs](https://fastapi-restful.netlify.app/) for more details and examples. 
+See the [docs](https://fastapi-restful.netlify.app/) for more details and examples.
 
 ## Requirements
 
