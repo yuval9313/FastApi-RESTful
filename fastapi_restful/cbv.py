@@ -1,10 +1,26 @@
 import inspect
-from typing import Any, Callable, List, Tuple, Type, TypeVar, Union, cast, get_type_hints
+from typing import (
+    Any,
+    Callable,
+    List,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+    get_type_hints,
+)
 
+import pydantic
 from fastapi import APIRouter, Depends
 from fastapi.routing import APIRoute
-from pydantic.typing import is_classvar
 from starlette.routing import Route, WebSocketRoute
+
+PYDANTIC_VERSION = pydantic.VERSION
+if PYDANTIC_VERSION[0] == "2":
+    from typing_inspect import is_classvar
+else:
+    from pydantic.typing import is_classvar  # type: ignore[no-redef]
 
 T = TypeVar("T")
 
@@ -22,7 +38,7 @@ def cbv(router: APIRouter, *urls: str) -> Callable[[Type[T]], Type[T]]:
     will be populated with an instance created using FastAPI's dependency-injection.
 
     For more detail, review the documentation at
-    https://fastapi-utils.davidmontague.xyz/user-guide/class-based-views/#the-cbv-decorator
+    https://fastapi-restful.netlify.app/user-guide/class-based-views//#the-cbv-decorator
     """
 
     def decorator(cls: Type[T]) -> Type[T]:

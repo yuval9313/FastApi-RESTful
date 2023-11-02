@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "fastapi-restful"
-version = "0.4.4"
+version = "0.5.0"
 description = "Quicker FastApi developing tools"
 license = "MIT"
 authors = ["Yuval Levi <yuvall9313@gmail.com>"]
 readme = "README.md"
 homepage = "https://fastapi-restful.netlify.app"
-repository = "https://github.com/yuval9313/fastapi-utils"
+repository = "https://github.com/yuval9313/FastApi-RESTful"
 documentation = "https://fastapi-restful.netlify.app"
 keywords = ["fastapi", "OOP", "RESTful"]
 classifiers = [
@@ -41,10 +41,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 
-fastapi = "^0.89"
-pydantic = "^1.0,<2.0"
-sqlalchemy =  { version = "^1.4,<2.0", optional = true }
+fastapi = ">=0.89,<1.0"
+pydantic = ">1.0, <3.0"
+sqlalchemy =  { version = ">=1.4,<3.0", optional = true }
 psutil = "^5"
+pydantic-settings = { version= "^2.0.1", optional = true }
+typing-inspect = { version = "^0.9.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 # Starlette features
@@ -63,6 +65,7 @@ ruff = "*"
 black = { version = "*", allow-prereleases = true }
 mypy = "*"
 sqlalchemy-stubs = "*"
+types-setuptools = "*"  # for pkg_resources import
 
 # Documentation
 mkdocs = "*"
@@ -71,7 +74,7 @@ markdown-include = "*"
 autoflake = "^1.4"
 
 [tool.poetry.extras]
-all = ["sqlalchemy"]
+all = ["sqlalchemy", "pydantic-settings", "typing-inspect"]
 session = ["sqlalchemy"]
 
 [tool.black]
