@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Yuval Levi <yuvall9313@gmail.com>"]
 readme = "README.md"
 homepage = "https://fastapi-restful.netlify.app"
-repository = "https://github.com/yuval9313/fastapi-utils"
+repository = "https://github.com/yuval9313/FastApi-RESTful"
 documentation = "https://fastapi-restful.netlify.app"
 keywords = ["fastapi", "OOP", "RESTful"]
 classifiers = [
@@ -65,6 +65,7 @@ ruff = "*"
 black = { version = "*", allow-prereleases = true }
 mypy = "*"
 sqlalchemy-stubs = "*"
+types-setuptools = "*"  # for pkg_resources import
 
 # Documentation
 mkdocs = "*"
