@@ -1,5 +1,10 @@
 from typing import NoReturn
-from unittest.mock import AsyncMock, call, patch
+from unittest.mock import call, patch
+
+try:
+    from unittest.mock import AsyncMock
+except ImportError:
+    from mock import AsyncMock
 
 import pytest
 
