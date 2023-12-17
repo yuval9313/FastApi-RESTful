@@ -1,10 +1,5 @@
 from typing import NoReturn
-from unittest.mock import call, patch
-
-try:
-    from unittest.mock import AsyncMock
-except ImportError:
-    from mock import AsyncMock
+from unittest.mock import Mock, call, patch
 
 import pytest
 
@@ -70,7 +65,7 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
     @patch("asyncio.sleep")
     async def test_max_repetitions(
         self,
-        asyncio_sleep_mock: AsyncMock,
+        asyncio_sleep_mock: Mock,
         seconds: float,
         max_repetitions: int,
         increase_counter_task: NoArgsNoReturnAsyncFuncT,
@@ -84,7 +79,7 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
         self,
-        asyncio_sleep_mock: AsyncMock,
+        asyncio_sleep_mock: Mock,
         seconds: float,
         max_repetitions: int,
         wait_first: float,
@@ -146,7 +141,7 @@ class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
     @patch("asyncio.sleep")
     async def test_max_repetitions(
         self,
-        asyncio_sleep_mock: AsyncMock,
+        asyncio_sleep_mock: Mock,
         seconds: float,
         max_repetitions: int,
         increase_counter_task: NoArgsNoReturnAsyncFuncT,
@@ -160,7 +155,7 @@ class TestRepeatEveryWithAsynchronousFunction(TestRepeatEveryBase):
     @patch("asyncio.sleep")
     async def test_max_repetitions_and_wait_first(
         self,
-        asyncio_sleep_mock: AsyncMock,
+        asyncio_sleep_mock: Mock,
         seconds: float,
         max_repetitions: int,
         wait_first_increase_counter_task: NoArgsNoReturnAsyncFuncT,
