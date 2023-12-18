@@ -1,10 +1,9 @@
 from typing import NoReturn
-from unittest.mock import call, patch
 
 try:
-    from unittest.mock import AsyncMock
+    from unittest.mock import call, patch, AsyncMock
 except ImportError:
-    from mock import AsyncMock
+    from mock import AsyncMock, patch, call
 
 import pytest
 
@@ -75,8 +74,10 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
         max_repetitions: int,
         increase_counter_task: NoArgsNoReturnAsyncFuncT,
     ) -> None:
+        breakpoint()
         await increase_counter_task()
 
+        breakpoint()
         assert self.counter == max_repetitions
         asyncio_sleep_mock.assert_has_calls(max_repetitions * [call(seconds)], any_order=True)
 
