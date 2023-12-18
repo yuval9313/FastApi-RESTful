@@ -74,10 +74,8 @@ class TestRepeatEveryWithSynchronousFunction(TestRepeatEveryBase):
         max_repetitions: int,
         increase_counter_task: NoArgsNoReturnAsyncFuncT,
     ) -> None:
-        breakpoint()
         await increase_counter_task()
 
-        breakpoint()
         assert self.counter == max_repetitions
         asyncio_sleep_mock.assert_has_calls(max_repetitions * [call(seconds)], any_order=True)
 
