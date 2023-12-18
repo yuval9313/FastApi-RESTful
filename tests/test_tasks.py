@@ -1,7 +1,7 @@
 from typing import NoReturn
 
 try:
-    from unittest.mock import call, patch, AsyncMock
+    from unittest.mock import AsyncMock, call, patch
 except ImportError:
     from mock import AsyncMock, patch, call
 
