@@ -1,9 +1,16 @@
-from typing import NoReturn
+import sys
+from typing import TYPE_CHECKING, NoReturn
 
-try:
-    from unittest.mock import AsyncMock, call, patch  # type: ignore
-except ImportError:
-    from mock import AsyncMock, call, patch  # type: ignore
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 8):
+        from unittest.mock import AsyncMock, call, patch
+    else:
+        from mock import AsyncMock, call, patch
+else:
+    try:
+        from unittest.mock import AsyncMock, call, patch
+    except ImportError:
+        from mock import AsyncMock, call, patch
 
 import pytest
 
