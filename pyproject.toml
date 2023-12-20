@@ -73,7 +73,7 @@ types-setuptools = "*"  # for pkg_resources import
 mkdocs = "*"
 mkdocs-material = "*"
 markdown-include = "*"
-autoflake = "^1.4"
+autoflake = "^2.1"
 
 [tool.poetry.extras]
 all = ["sqlalchemy", "pydantic-settings", "typing-inspect"]
