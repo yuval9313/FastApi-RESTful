@@ -4,7 +4,6 @@ from typing import Any, ClassVar, Optional
 
 import pytest
 from fastapi import APIRouter, Depends, Request
-from fastapi.datastructures import URL
 from starlette.testclient import TestClient
 
 from fastapi_restful.cbv import cbv
